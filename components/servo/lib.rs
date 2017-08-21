@@ -392,6 +392,22 @@ impl<Window> Servo<Window> where Window: WindowMethods + 'static {
                     }
                 },
 
+                (EmbedderMsg::GetScreenSize(top_level_browsing_context_id, send),
+                 ShutdownState::NotShuttingDown) => {
+                    let screen_size = self.compositor.window.screen_size(top_level_browsing_context_id);
+                    if let Err(e) = send.send(screen_size) {
+                        warn!("Sending response to get screen size failed ({}).", e);
+                    }
+                }
+
+                (EmbedderMsg::GetScreenAvailSize(top_level_browsing_context_id, send),
+                 ShutdownState::NotShuttingDown) => {
+                    let screen_size = self.compositor.window.screen_avail_size(top_level_browsing_context_id);
+                    if let Err(e) = send.send(screen_size) {
+                        warn!("Sending response to get screen avail size failed ({}).", e);
+                    }
+                }
+
                 (EmbedderMsg::AllowNavigation(top_level_browsing_context,
                                               url,
                                               response_chan),
